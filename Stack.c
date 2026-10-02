@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>  // FIXME README
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
@@ -10,6 +10,9 @@
 #else
     #define ONDEB(...)
 #endif
+
+ONDEB(static FILE* log_file = NULL;) // FIXME log
+#define STACK_LOG_FILE_NAME "stack_log.txt"
 
 /*#define Print_error_message(message, object)                                         \
     fprintf(stderr, "%s(): %s - %s, line %d\n", __func__, message, object, __LINE__);*/
@@ -29,7 +32,7 @@ typedef enum {POP_NORMAL = 0}  Pop_err_t;  // return of StackPop()*/
 #define DOUBLE 3
 #define POINTER 4
 
-#define STACK_TYPE DOUBlE  // REVIEW add poison to descriptor and pop and init
+#define STACK_TYPE DOUBLE  // REVIEW add poison to descriptor and pop and init
 
 #if STACK_TYPE == INT
     #define Stack_type_t int
@@ -57,6 +60,7 @@ typedef enum {POP_NORMAL = 0}  Pop_err_t;  // return of StackPop()*/
 typedef char Byte_t;
 typedef unsigned long long int Canary_t;
 
+#define CANARY_SPECIFIER "0x%llX"
 #define CANARY_BYTE_SIZE sizeof(Canary_t)
 #define LEFT_CANARY         0xCA14A2E7CE111A27ull
 #define RIGHT_CANARY        0xB12D1412E17B12D5ull
@@ -74,7 +78,10 @@ typedef unsigned long long int Canary_t;
 #define STACK_VERIFY(stack)               \
     StackVerify(stack, __func__, __LINE__)
 
-#define COLOR_SWITCH ON           // switch color output
+#define ON 1
+#define OFF 0
+
+#define COLOR_SWITCH OFF           // switch color output
 
 #if COLOR_SWITCH == ON
     #define RED "\x1b[31m"
@@ -85,8 +92,8 @@ typedef unsigned long long int Canary_t;
     #define END "\x1b[0m"
 
     /* Color: is replaced by s colored in color */
-    #define SetColor(color) printf(color);
-    #define EndColor printf(END);
+    #define SetColor(color) fprintf(log_file, color);
+    #define EndColor fprintf(log_file, END);
     #define Color(s, color) color s END
 #else
     #define RED ""
@@ -102,7 +109,7 @@ typedef unsigned long long int Canary_t;
 #endif
 
 struct Stack_t {
-    Canary_t left_handle_canary;
+    ONDEB(Canary_t left_handle_canary;)
 
     ONDEB(
         const char* stack_name;
@@ -118,7 +125,7 @@ struct Stack_t {
     bool error_fatality;
     Stack_report_t last_function_success;
 
-    Canary_t right_handle_canary;
+    ONDEB(Canary_t right_handle_canary;)
 };  // REVIEW error status
 
 Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* file_name,
@@ -151,31 +158,66 @@ void StackSetCanary(Stack_t* stack);
 
 
 int main() {
+    ONDEB(
+        log_file = fopen(STACK_LOG_FILE_NAME, "w");
+        if (log_file == NULL) {
+            SetColor(YEL);
+            printf("Cant open %s with \"w\" permission\n", STACK_LOG_FILE_NAME);
+            EndColor;
+            return 1;
+        }
+    )
+
     Stack_t* stk1 = STACK_INIT(stk1, 2);
-    /*if (stk1 == NULL) {
-        printf("Bad initialization!\n");
-    }*/
+    //Stack_t* stk1 = STACK_INIT(stk1, -20000000000);
+    if (stk1 == NULL) {
+        ONDEB(fprintf(log_file, "Bad initialization!\n");)
+        return 1;
+    }
 
 
     //*RightCanaryPtr(&stk1) = 67;
 
-    StackPush(stk1, 67.67);
-    printf("-------------------------------------\n");
-    StackPush(stk1, 67.67);
-    printf("-------------------------------------\n");
-    StackPush(stk1, 67.67);
-    printf("-------------------------------------\n");
-    StackPush(stk1, 67.67);
-    printf("-------------------------------------\n");
-    StackPush(stk1, 67.67);
-    printf("-------------------------------------\n");
-    printf("-------------------------------------\n");
+    StackPush(stk1, 67);
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    StackPush(stk1, 67);
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    StackPush(stk1, 67);
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    StackPush(stk1, 67);
+    *LeftCanaryPtr(stk1) = 67;
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    StackPush(stk1, 67);
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    //stk1->left_handle_canary = 2;
 
-    printf("<%lf>\n", StackPop(stk1));
-    printf("-------------------------------------\n");
-    printf("<%lf>\n", StackPop(stk1));
+    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
+    if (stk1->last_function_success == VACUUM)
+        ONDEB(fprintf(log_file, "GGG\n");)
+    ONDEB(fprintf(log_file, "-------------------------------------\n");
+    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
+    if (stk1->last_function_success == VACUUM))
+        ONDEB(fprintf(log_file, "GGG\n");)
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
+    if (stk1->last_function_success == VACUUM)
+        ONDEB(fprintf(log_file, "GGG\n");)
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
+    if (stk1->last_function_success == VACUUM)
+        ONDEB(fprintf(log_file, "GGG\n");)
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
+    if (stk1->last_function_success == VACUUM)
+        ONDEB(fprintf(log_file, "GGG\n");)
+    ONDEB(fprintf(log_file, "-------------------------------------\n");)
+    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
+    if (stk1->last_function_success == VACUUM)
+        ONDEB(fprintf(log_file, "GGG\n");)
 
     //(void)STACK_VERIFY(&stk1);
+    StackDestroy(stk1);
 }
 
 
@@ -191,7 +233,7 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
     if (capacity < 1)
         capacity = DEFAULT_CAPACITY;
 
-    stack->left_handle_canary = LEFT_HANDLE_CANARY;
+    ONDEB(stack->left_handle_canary = LEFT_HANDLE_CANARY;)
 
     ONDEB(
         stack->stack_name = stack_name;
@@ -212,7 +254,7 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
 
     ONDEB(StackFillPoison(stack, 0);) // REVIEW make function for fill poison
 
-    stack->right_handle_canary = RIGHT_HANDLE_CANARY;
+    ONDEB(stack->right_handle_canary = RIGHT_HANDLE_CANARY;)
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))    // STUB
         return NULL;
@@ -221,7 +263,7 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
 }
 
 
-void StackDestroy(Stack_t* stack) {
+void StackDestroy(Stack_t* stack) { // FIXME proverit videlen li etot adress
     assert(stack != NULL);
 
     if (stack->data != NULL) {
@@ -246,72 +288,94 @@ void StackFillPoison(Stack_t* stack, int start_offset) { // REVIEW add parameter
 
 Stack_err_t StackVerify(Stack_t* stack, const char* calling_function_name, int from_line) { // REVIEW split on functions
     assert(stack != NULL); assert(calling_function_name != NULL);   // REVIEW get calling function name as parameter
+    ONDEB(assert(log_file != NULL);)
 
-    ONDEB(printf(">>>>>\n");)  // REVIEW canory for data and Stack_t
+    ONDEB(fprintf(log_file, ">>>>>\n");)  // REVIEW canory for data and Stack_t
 
     (void)DiagnoseFatalError(stack, calling_function_name, from_line);
 
     ONDEB(
-        printf("\n");
+        fprintf(log_file, "\n");
         StackDump(stack);
     )
 
-    ONDEB(printf("<<<<<\n\n");)
+    ONDEB(fprintf(log_file, "<<<<<\n\n");)
 
     return stack->error;
 }
 
 
 Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name, int from_line) {
-    assert(stack != NULL); assert(calling_function_name != NULL);
+    assert(stack != NULL); assert(calling_function_name != NULL); // FIXME HASH data and srtuct
+    ONDEB(assert(log_file != NULL);)
 
-    if ((stack->left_handle_canary != LEFT_HANDLE_CANARY) ||
-        (stack->right_handle_canary != RIGHT_HANDLE_CANARY)) {
-        ONDEB(printf("Diagnostic from %s(), line %d: Fatal error - handle information has been damaged, program aborted\n", calling_function_name, from_line);)
-        abort();
-    }
+    ONDEB(SetColor(RED);)
+                                        // STUB
+    ONDEB (
+        if ((stack->left_handle_canary != LEFT_HANDLE_CANARY) ||
+            (stack->right_handle_canary != RIGHT_HANDLE_CANARY)) {
+            ONDEB(
+                fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - handle information has been damaged, program aborted\n",
+                       calling_function_name, from_line);
+                fprintf(log_file, "Left " CANARY_SPECIFIER ", Right " CANARY_SPECIFIER "\n",
+                       stack->left_handle_canary, stack->right_handle_canary);
+            )
+            ONDEB(EndColor;)
+            abort();
+        }
+    )
 
     stack->error = STACK_NORMAL;
     stack->error_fatality = NOT_FATAL;
 
-    SetColor(RED);
     if (stack->data == NULL) {
-        ONDEB(printf("Diagnostic from %s(), line %d: Fatal error - data is lost, may be it did not allocated or was free\n", calling_function_name, from_line);)
+        ONDEB(fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - data is lost, may be it did not allocated or was free\n", calling_function_name, from_line);)
         stack->error = (Stack_err_t)(stack->error | STACK_DATA_ERROR);
         stack->error_fatality = FATAL;
     }
-    else {
-        if (*LeftCanaryPtr(stack) != LEFT_CANARY) {
-            ONDEB(printf("Diagnostic from %s(), line %d: Warning - left canary has been damaged\n", calling_function_name, from_line);)
-            stack->error = (Stack_err_t)(stack->error | STACK_LEFT_CANARY_ERROR);
+    ONDEB(
+        else { // FIXME print canary value
+            if (*LeftCanaryPtr(stack) != LEFT_CANARY) {
+                ONDEB(
+                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - left canary has been damaged\n",
+                           calling_function_name, from_line);
+                    fprintf(log_file, "Its value: " CANARY_SPECIFIER "\n", *LeftCanaryPtr(stack));
+                )
+                stack->error = (Stack_err_t)(stack->error | STACK_LEFT_CANARY_ERROR);
+            }
+            if (*RightCanaryPtr(stack) != RIGHT_CANARY) {
+                ONDEB(
+                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - right canary has been damaged\n",
+                           calling_function_name, from_line);
+                    fprintf(log_file, "Its value: " CANARY_SPECIFIER "\n", *RightCanaryPtr(stack));
+                )
+                stack->error = (Stack_err_t)(stack->error | STACK_RIGHT_CANARY_ERROR);
+            }
         }
-        if (*RightCanaryPtr(stack) != RIGHT_CANARY) {
-            ONDEB(printf("Diagnostic from %s(), line %d: Warning - right canary has been damaged\n", calling_function_name, from_line);)
-            stack->error = (Stack_err_t)(stack->error | STACK_RIGHT_CANARY_ERROR);
-        }
-    }
+    )
+
     if (stack->capacity < 1) {
-        ONDEB(printf("Diagnostic from %s(), line %d: Fatal error - invalid stack capacity, it must be positive\n", calling_function_name, from_line);)
+        ONDEB(fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - invalid stack capacity, it must be positive\n", calling_function_name, from_line);)
         stack->error = (Stack_err_t)(stack->error | STACK_CAPACITY_ERROR);
         stack->error_fatality = FATAL;
     }
     if (stack->size > stack->capacity) {
-        ONDEB(printf("Diagnostic from %s(), line %d: Fatal error - invalid stack size, it must not exceed capacity\n", calling_function_name, from_line);)
+        ONDEB(fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - invalid stack size, it must not exceed capacity\n", calling_function_name, from_line);)
         stack->error = (Stack_err_t)(stack->error | STACK_SIZE_ERROR);
         stack->error_fatality = FATAL;
     }
     if (stack->size < 0) {
-        ONDEB(printf("Diagnostic from %s(), line %d: Fatal error - invalid stack size, it can not be negative\n", calling_function_name, from_line);)
+        ONDEB(fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - invalid stack size, it can not be negative\n", calling_function_name, from_line);)
         stack->error = (Stack_err_t)(stack->error | STACK_SIZE_ERROR);
         stack->error_fatality = FATAL;
     }
 
-    SetColor(GRE);
+    ONDEB(SetColor(GRE);)
     if (stack->error == STACK_NORMAL) {
-        ONDEB(printf("Diagnostic from %s(), line %d: No fatal damage\n", calling_function_name, from_line);)
+        ONDEB(fprintf(log_file, "Diagnostic from %s(), line %d: No fatal damage\n", calling_function_name, from_line);)
     }
 
-    EndColor;
+    ONDEB(EndColor;)
 
     return stack->error;
 }
@@ -319,46 +383,48 @@ Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name
 
 void StackDump(const Stack_t* stack) { // TODO color
     assert(stack != NULL);
+    assert(log_file != NULL);
 
     ONDEB(
-        printf("%s[%p] with type %s from file %s, func %s(), line %d:\n\n",
+        fprintf(log_file, "%s[%p] with type %s from file %s, func %s(), line %d:\n\n",
                stack->stack_name, stack->data, IN_STR(Stack_type_t),
                stack->file_name, stack->function_name, stack->line_number);
     )
 
-    printf("capacity = %d\nsize = %d\n\n", stack->capacity, stack->size); // REVIEW print stack->error
+    fprintf(log_file, "capacity = %d\nsize = %d\n\n", stack->capacity, stack->size); // REVIEW print stack->error
     StackPrintError(stack);
 
-    printf("data = %p:\n", stack->data);
+    fprintf(log_file, "data = %p:\n", stack->data);
     if (stack->data != NULL) {
         for (Stack_type_t* in_stack_ptr = stack->data;
              (in_stack_ptr - stack->data) < stack->capacity; in_stack_ptr++) {
-            if ((in_stack_ptr - stack->data) < stack->size) printf(" * ");
-            else printf("   ");
+            if ((in_stack_ptr - stack->data) < stack->size) fprintf(log_file, " * ");
+            else fprintf(log_file, "   ");
 
-            printf(STACK_TYPE_SPECIFIER, *in_stack_ptr);
+            fprintf(log_file, STACK_TYPE_SPECIFIER, *in_stack_ptr);
 
-            if (*in_stack_ptr == POISON) printf(" (POISON)");
-            printf("\n");
+            if (*in_stack_ptr == POISON) fprintf(log_file, " (POISON)");
+            fprintf(log_file, "\n");
         }
     }
     else
-        printf("   Impossible to print data\n");
+        fprintf(log_file, "   Impossible to print data\n");
 }
 
 
 #define STACK_CHECK_ERROR(errors_code, checking_error)\
     if ((errors_code & checking_error) != 0) {        \
-        printf("   " #checking_error "\n");           \
+        fprintf(log_file, "   " #checking_error "\n");           \
     }
 
 void StackPrintError(const Stack_t* stack) {
     assert(stack != NULL);
+    assert(log_file != NULL);
 
-    printf("error:\n");
+    fprintf(log_file, "error:\n");
 
     if (stack->error == STACK_NORMAL)
-        printf("   no error\n");
+        fprintf(log_file, "   no error\n");
     else {
         SetColor(RED);
 
@@ -371,7 +437,7 @@ void StackPrintError(const Stack_t* stack) {
         EndColor;
     }
 
-    printf("\n");
+    fprintf(log_file, "\n");
 }
 
 
@@ -399,6 +465,7 @@ Stack_report_t StackPush(Stack_t* stack, Stack_type_t new_item) {
 
 Stack_type_t StackPop(Stack_t* stack) {
     assert(stack != NULL);
+    ONDEB(assert(log_file != NULL);)
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL)) {
         stack->last_function_success = FATAL_ERROR;
@@ -408,7 +475,7 @@ Stack_type_t StackPop(Stack_t* stack) {
     if (stack->size < 1) {
         ONDEB(
             SetColor(YEL);
-            printf("note from %s(), line %d: can not do pop because stack is empty, pop was cancelled\n",
+            fprintf(log_file, "note from %s(), line %d: can not do pop because stack is empty, pop was cancelled\n",
                    __func__, __LINE__, stack->stack_name);
             EndColor;
         )
@@ -440,6 +507,7 @@ Stack_type_t StackPop(Stack_t* stack) {
 
 Stack_report_t StackIncreaseCapacity(Stack_t* stack) {
     assert(stack != NULL);
+    ONDEB(assert(log_file != NULL);)
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))
         return FATAL_ERROR;
@@ -450,7 +518,7 @@ Stack_report_t StackIncreaseCapacity(Stack_t* stack) {
         if (new_data == NULL) {
             ONDEB(
                 SetColor(YEL);
-                printf("note from %s(), line %d: can not grow up capacity for %s, push was cancelled\n",
+                fprintf(log_file, "note from %s(), line %d: can not grow up capacity for %s, push was cancelled\n",
                        __func__, __LINE__, stack->stack_name);
                 EndColor;
             )

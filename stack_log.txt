@@ -1,0 +1,555 @@
+>>>>>
+Diagnostic from StackInit(), line 258: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00F914B8:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPush(), line 446: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00F914B8:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPush(), line 458: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+-------------------------------------
+>>>>>
+Diagnostic from StackPush(), line 446: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPush(), line 458: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 2
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+<<<<<
+
+-------------------------------------
+>>>>>
+Diagnostic from StackPush(), line 446: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 2
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+<<<<<
+
+>>>>>
+Diagnostic from StackIncreaseCapacity(), line 511: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 2
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+<<<<<
+
+>>>>>
+Diagnostic from StackIncreaseCapacity(), line 533: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 2
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPush(), line 458: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+-------------------------------------
+>>>>>
+Diagnostic from StackPush(), line 446: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPush(), line 458: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 4
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+<<<<<
+
+-------------------------------------
+>>>>>
+Diagnostic from StackPush(), line 446: Warning - left canary has been damaged
+Its value: 0x43
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 4
+
+error:
+   STACK_LEFT_CANARY_ERROR
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+<<<<<
+
+>>>>>
+Diagnostic from StackIncreaseCapacity(), line 511: Warning - left canary has been damaged
+Its value: 0x43
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 4
+
+error:
+   STACK_LEFT_CANARY_ERROR
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+<<<<<
+
+>>>>>
+Diagnostic from StackIncreaseCapacity(), line 533: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 7
+size = 4
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPush(), line 458: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 7
+size = 5
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+-------------------------------------
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 469: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 7
+size = 5
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 497: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 7
+size = 4
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 469: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 7
+size = 4
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 543: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 7
+size = 3
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 557: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 497: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 469: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 497: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 2
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 469: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 2
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 543: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 4
+size = 1
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 557: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 497: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 469: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00F914B8:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 497: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00F914B8:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 469: No fatal damage
+
+stk1[00F914B8] with type double from file Stack.c, func main(), line 171:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00F914B8:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+note from StackPop(), line 480: can not do pop because stack is empty, pop was cancelled
+<1.#QNAN0>
+GGG
