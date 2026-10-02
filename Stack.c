@@ -24,8 +24,35 @@ typedef enum {SUCCESS = 0, FATAL_ERROR = 1, OVERFLOW = -1, VACUUM = -2}         
 /*typedef enum {PUSH_NORMAL = 0} Push_err_t; // return of StackPush()
 typedef enum {POP_NORMAL = 0}  Pop_err_t;  // return of StackPop()*/
 
-#define STACK_TYPE double
-#define STACK_TYPE_SPECIFIER "%lf"
+#define INT 1
+#define FLOAT 2  // REVIEW set type
+#define DOUBLE 3
+#define POINTER 4
+
+#define STACK_TYPE DOUBlE  // REVIEW add poison to descriptor and pop and init
+
+#if STACK_TYPE == INT
+    #define Stack_type_t int
+    #define STACK_TYPE_SPECIFIER "%d"
+    #define POISON 1666667
+#elif STACK_TYPE == FLOAT
+    #define Stack_type_t float
+    #define STACK_TYPE_SPECIFIER "%f"
+    #define POISON NAN
+#elif STACK_TYPE == DOUBLE
+    #define Stack_type_t double
+    #define STACK_TYPE_SPECIFIER "%lf"
+    #define POISON NAN
+#elif STACK_TYPE == POINTER
+    #define Stack_type_t void*
+    #define STACK_TYPE_SPECIFIER "%p"
+    #define POISON NULL
+#else
+    #define Stack_type_t long long int
+    #define STACK_TYPE_SPECIFIER "%lld"
+    #define POISON 166666666667
+#endif
+
 
 typedef char Byte_t;
 typedef unsigned long long int Canary_t;
@@ -38,7 +65,6 @@ typedef unsigned long long int Canary_t;
 
 #define DEFAULT_CAPACITY 10ull
 #define CAPACITY_FACTOR 1.5
-#define POISON 1666667   // REVIEW add poison to descriptor and pop and init
 
 #define WRAP_IN_STR(not_str) #not_str
 #define IN_STR(not_str) WRAP_IN_STR(not_str) // REVIEW STACK_INIT using __line__ inside itself
@@ -85,7 +111,7 @@ struct Stack_t {
         int line_number;
     )
 
-    STACK_TYPE* data;
+    Stack_type_t* data;
     ssize_t capacity; // capasity unsigned chech prisvaemoe znachenie na polojitelnost
     size_t size;
     Stack_err_t error;
@@ -110,15 +136,15 @@ void StackDump(const Stack_t* stack);
 
 void StackPrintError(const Stack_t* stack);
 
-Stack_report_t StackPush(Stack_t* stack, STACK_TYPE new_item);
+Stack_report_t StackPush(Stack_t* stack, Stack_type_t new_item);
 
-STACK_TYPE StackPop(Stack_t* stack);  // REVIEW obratniy spusk
+Stack_type_t StackPop(Stack_t* stack);  // REVIEW obratniy spusk
 
 Stack_report_t StackIncreaseCapacity(Stack_t* stack);
 
 Stack_report_t StackReduceCapacity(Stack_t* stack);
 
-STACK_TYPE* StackReallocWithCanary(STACK_TYPE* old_data, ssize_t new_capacity);
+Stack_type_t* StackReallocWithCanary(Stack_type_t* old_data, ssize_t new_capacity);
 Canary_t* LeftCanaryPtr(Stack_t* stack);
 Canary_t* RightCanaryPtr(Stack_t* stack);
 void StackSetCanary(Stack_t* stack);
@@ -211,7 +237,7 @@ void StackFillPoison(Stack_t* stack, int start_offset) { // REVIEW add parameter
     assert(stack != NULL);
 
     if (stack->data != NULL) {
-        for (STACK_TYPE* in_stack_ptr = stack->data + start_offset;
+        for (Stack_type_t* in_stack_ptr = stack->data + start_offset;
              (in_stack_ptr - stack->data) < stack->capacity; in_stack_ptr++)
             *in_stack_ptr = POISON;
     }
@@ -296,7 +322,7 @@ void StackDump(const Stack_t* stack) { // TODO color
 
     ONDEB(
         printf("%s[%p] with type %s from file %s, func %s(), line %d:\n\n",
-               stack->stack_name, stack->data, IN_STR(STACK_TYPE),
+               stack->stack_name, stack->data, IN_STR(Stack_type_t),
                stack->file_name, stack->function_name, stack->line_number);
     )
 
@@ -305,7 +331,7 @@ void StackDump(const Stack_t* stack) { // TODO color
 
     printf("data = %p:\n", stack->data);
     if (stack->data != NULL) {
-        for (STACK_TYPE* in_stack_ptr = stack->data;
+        for (Stack_type_t* in_stack_ptr = stack->data;
              (in_stack_ptr - stack->data) < stack->capacity; in_stack_ptr++) {
             if ((in_stack_ptr - stack->data) < stack->size) printf(" * ");
             else printf("   ");
@@ -349,7 +375,7 @@ void StackPrintError(const Stack_t* stack) {
 }
 
 
-Stack_report_t StackPush(Stack_t* stack, STACK_TYPE new_item) {
+Stack_report_t StackPush(Stack_t* stack, Stack_type_t new_item) {
     assert(stack != NULL);
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))
@@ -371,7 +397,7 @@ Stack_report_t StackPush(Stack_t* stack, STACK_TYPE new_item) {
 }
 
 
-STACK_TYPE StackPop(Stack_t* stack) {
+Stack_type_t StackPop(Stack_t* stack) {
     assert(stack != NULL);
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL)) {
@@ -391,7 +417,7 @@ STACK_TYPE StackPop(Stack_t* stack) {
     }
 
     stack->size--;
-    STACK_TYPE result = stack->data[stack->size];
+    Stack_type_t result = stack->data[stack->size];
     ONDEB(stack->data[stack->size] = POISON);
 
     if (((ssize_t)(stack->size * pow(CAPACITY_FACTOR, 2)) < stack->capacity) && (stack->size > 0)) {
@@ -419,7 +445,7 @@ Stack_report_t StackIncreaseCapacity(Stack_t* stack) {
         return FATAL_ERROR;
 
     ssize_t new_capacity = (ssize_t)(stack->capacity * CAPACITY_FACTOR) + 1;
-        STACK_TYPE* new_data = StackReallocWithCanary(stack->data, new_capacity);
+        Stack_type_t* new_data = StackReallocWithCanary(stack->data, new_capacity);
 
         if (new_data == NULL) {
             ONDEB(
@@ -451,7 +477,7 @@ Stack_report_t StackReduceCapacity(Stack_t* stack) {
         return FATAL_ERROR;
 
     ssize_t new_capacity = (ssize_t)(stack->capacity / CAPACITY_FACTOR);
-        STACK_TYPE* new_data = StackReallocWithCanary(stack->data, new_capacity);
+        Stack_type_t* new_data = StackReallocWithCanary(stack->data, new_capacity);
 
         if (new_data != NULL) {
             stack->capacity = new_capacity; // REVIEW add canary
@@ -468,16 +494,16 @@ Stack_report_t StackReduceCapacity(Stack_t* stack) {
 }
 
 
-STACK_TYPE* StackReallocWithCanary(STACK_TYPE* old_data, ssize_t new_capacity) {
+Stack_type_t* StackReallocWithCanary(Stack_type_t* old_data, ssize_t new_capacity) {
     Byte_t* byte_old_data = (Byte_t*)old_data;
     if (old_data != NULL)
         byte_old_data -= CANARY_BYTE_SIZE;
-    void* buffer_start = realloc(byte_old_data, (new_capacity * sizeof(STACK_TYPE)) + (2 * CANARY_BYTE_SIZE));
+    void* buffer_start = realloc(byte_old_data, (new_capacity * sizeof(Stack_type_t)) + (2 * CANARY_BYTE_SIZE));
 
     if (buffer_start == NULL)
         return NULL;
 
-    return (STACK_TYPE*)((Byte_t*)buffer_start + CANARY_BYTE_SIZE);
+    return (Stack_type_t*)((Byte_t*)buffer_start + CANARY_BYTE_SIZE);
 }
 
 Canary_t* LeftCanaryPtr(Stack_t* stack) {
