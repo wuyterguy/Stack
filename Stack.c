@@ -11,17 +11,34 @@
     #define ONDEB(...)
 #endif
 
-ONDEB(static FILE* log_file = NULL;) // FIXME log
+#define CANARY_PROTECTION  //  NOTE off canary protection
+
+#ifdef CANARY_PROTECTION
+    #define ONCAN(...) __VA_ARGS__
+#else
+    #define ONCAN(...)
+#endif
+
+#define HASH_PROTECTION
+
+#ifdef HASH_PROTECTION
+    #define ONHASH(...) __VA_ARGS__
+#else
+    #define ONHASH(...)
+#endif
+
+static FILE* log_file = NULL; // NOTE log
 #define STACK_LOG_FILE_NAME "stack_log.txt"
 
 /*#define Print_error_message(message, object)                                         \
     fprintf(stderr, "%s(): %s - %s, line %d\n", __func__, message, object, __LINE__);*/
 #undef OVERFLOW
 
-typedef enum {STACK_NORMAL = 0b00000, STACK_DATA_ERROR = 0b00001,
-              STACK_CAPACITY_ERROR = 0b00010, STACK_SIZE_ERROR = 0b00100,
-              STACK_LEFT_CANARY_ERROR =0b01000, STACK_RIGHT_CANARY_ERROR = 0b10000} Stack_err_t;
-typedef enum {SUCCESS = 0, FATAL_ERROR = 1, OVERFLOW = -1, VACUUM = -2}             Stack_report_t;
+typedef enum {STACK_NORMAL =            0b0000000, STACK_DATA_ERROR =         0b0000001,
+              STACK_CAPACITY_ERROR =    0b0000010, STACK_SIZE_ERROR =         0b0000100,
+              STACK_LEFT_CANARY_ERROR = 0b0001000, STACK_RIGHT_CANARY_ERROR = 0b0010000,
+              STACK_DATA_HASH_ERROR =   0b0100000, STACK_HANDLE_HASH_ERROR =  0b1000000} Stack_err_t;
+typedef enum {SUCCESS = 0, FATAL_ERROR = 1, OVERFLOW = -1, VACUUM = -2}                  Stack_report_t;
 #define FATAL true
 #define NOT_FATAL false
 /*typedef enum {PUSH_NORMAL = 0} Push_err_t; // return of StackPush()
@@ -109,7 +126,7 @@ typedef unsigned long long int Canary_t;
 #endif
 
 struct Stack_t {
-    ONDEB(Canary_t left_handle_canary;)
+    ONCAN(Canary_t left_handle_canary;)
 
     ONDEB(
         const char* stack_name;
@@ -125,7 +142,10 @@ struct Stack_t {
     bool error_fatality;
     Stack_report_t last_function_success;
 
-    ONDEB(Canary_t right_handle_canary;)
+    ONHASH(unsigned long long int data_hash;)
+    ONHASH(unsigned long long int handle_hash;)
+
+    ONCAN(Canary_t right_handle_canary;)
 };  // REVIEW error status
 
 Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* file_name,
@@ -137,7 +157,7 @@ void StackFillPoison(Stack_t* stack, int start_offset);
 
 Stack_err_t StackVerify(Stack_t* stack, const char* calling_function_name, int from_line);
 
-Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name, int from_line);
+Stack_err_t DiagnoseError(Stack_t* stack, const char* calling_function_name, int from_line);
 
 void StackDump(const Stack_t* stack);
 
@@ -151,10 +171,19 @@ Stack_report_t StackIncreaseCapacity(Stack_t* stack);
 
 Stack_report_t StackReduceCapacity(Stack_t* stack);
 
-Stack_type_t* StackReallocWithCanary(Stack_type_t* old_data, ssize_t new_capacity);
-Canary_t* LeftCanaryPtr(Stack_t* stack);
-Canary_t* RightCanaryPtr(Stack_t* stack);
-void StackSetCanary(Stack_t* stack);
+Stack_type_t* StackRealloc(Stack_type_t* old_data, ssize_t new_capacity);
+
+ONCAN(
+    Canary_t* LeftCanaryPtr(Stack_t* stack);
+    Canary_t* RightCanaryPtr(Stack_t* stack);
+    void StackSetDataCanary(Stack_t* stack);
+)
+
+ONHASH(
+    unsigned long long int StackDataHash(Stack_t* stack);
+    unsigned long long int StackHandleHash(Stack_t* stack);
+    unsigned long long int StackHash(unsigned char* from_ptr, size_t hashing_size);
+)
 
 
 int main() {
@@ -185,7 +214,8 @@ int main() {
     StackPush(stk1, 67);
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
     StackPush(stk1, 67);
-    *LeftCanaryPtr(stk1) = 67;
+    //*(LeftCanaryPtr(stk1) + 2) = 67;
+    //stk1->size = 5;
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
     StackPush(stk1, 67);
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
@@ -233,7 +263,7 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
     if (capacity < 1)
         capacity = DEFAULT_CAPACITY;
 
-    ONDEB(stack->left_handle_canary = LEFT_HANDLE_CANARY;)
+    ONCAN(stack->left_handle_canary = LEFT_HANDLE_CANARY;)
 
     ONDEB(
         stack->stack_name = stack_name;
@@ -248,13 +278,16 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
     stack->error = STACK_NORMAL;
     stack->error_fatality = NOT_FATAL;
     stack->last_function_success = SUCCESS;
-    stack->data = StackReallocWithCanary(NULL, stack->capacity); // REVIEW func
+    stack->data = StackRealloc(NULL, stack->capacity); // REVIEW func
     if (stack->data != NULL)
-        StackSetCanary(stack);
+        ONCAN(StackSetDataCanary(stack);)
 
     ONDEB(StackFillPoison(stack, 0);) // REVIEW make function for fill poison
 
-    ONDEB(stack->right_handle_canary = RIGHT_HANDLE_CANARY;)
+    ONHASH(stack->data_hash = StackDataHash(stack);)
+    ONHASH(stack->handle_hash = StackHandleHash(stack);)
+
+    ONCAN(stack->right_handle_canary = RIGHT_HANDLE_CANARY;)
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))    // STUB
         return NULL;
@@ -268,7 +301,7 @@ void StackDestroy(Stack_t* stack) { // FIXME proverit videlen li etot adress
 
     if (stack->data != NULL) {
         ONDEB(StackFillPoison(stack, 0);)
-        free((Byte_t*)stack->data - CANARY_BYTE_SIZE); //REVIEW free(stack) with clearing fields by 0 values in case if it was requested bi stackInit
+        free((Byte_t*)stack->data ONCAN(- CANARY_BYTE_SIZE)); //REVIEW free(stack) with clearing fields by 0 values in case if it was requested bi stackInit
     }
 
     free(stack);
@@ -292,7 +325,7 @@ Stack_err_t StackVerify(Stack_t* stack, const char* calling_function_name, int f
 
     ONDEB(fprintf(log_file, ">>>>>\n");)  // REVIEW canory for data and Stack_t
 
-    (void)DiagnoseFatalError(stack, calling_function_name, from_line);
+    (void)DiagnoseError(stack, calling_function_name, from_line);
 
     ONDEB(
         fprintf(log_file, "\n");
@@ -305,13 +338,13 @@ Stack_err_t StackVerify(Stack_t* stack, const char* calling_function_name, int f
 }
 
 
-Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name, int from_line) {
-    assert(stack != NULL); assert(calling_function_name != NULL); // FIXME HASH data and srtuct
+Stack_err_t DiagnoseError(Stack_t* stack, const char* calling_function_name, int from_line) {
+    assert(stack != NULL); assert(calling_function_name != NULL); // NOTE HASH data and srtuct
     ONDEB(assert(log_file != NULL);)
 
     ONDEB(SetColor(RED);)
                                         // STUB
-    ONDEB (
+    ONCAN(
         if ((stack->left_handle_canary != LEFT_HANDLE_CANARY) ||
             (stack->right_handle_canary != RIGHT_HANDLE_CANARY)) {
             ONDEB(
@@ -319,6 +352,19 @@ Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name
                        calling_function_name, from_line);
                 fprintf(log_file, "Left " CANARY_SPECIFIER ", Right " CANARY_SPECIFIER "\n",
                        stack->left_handle_canary, stack->right_handle_canary);
+            )
+            ONDEB(EndColor;)
+            abort();
+        }
+    )
+
+    ONHASH(
+        unsigned long long int handle_hash = StackHandleHash(stack);
+        if (handle_hash != stack->handle_hash) {
+            ONDEB(
+                fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - incorrect handle hash, program aborted\n",
+                        calling_function_name, from_line);
+                fprintf(log_file, "Its value %lld, Must be %lld\n", handle_hash, stack->handle_hash);
             )
             ONDEB(EndColor;)
             abort();
@@ -333,8 +379,9 @@ Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name
         stack->error = (Stack_err_t)(stack->error | STACK_DATA_ERROR);
         stack->error_fatality = FATAL;
     }
-    ONDEB(
-        else { // FIXME print canary value
+
+    ONCAN(
+        if (stack->data != NULL) { // NOTE print canary value
             if (*LeftCanaryPtr(stack) != LEFT_CANARY) {
                 ONDEB(
                     fprintf(log_file, "Diagnostic from %s(), line %d: Warning - left canary has been damaged\n",
@@ -350,6 +397,20 @@ Stack_err_t DiagnoseFatalError(Stack_t* stack, const char* calling_function_name
                     fprintf(log_file, "Its value: " CANARY_SPECIFIER "\n", *RightCanaryPtr(stack));
                 )
                 stack->error = (Stack_err_t)(stack->error | STACK_RIGHT_CANARY_ERROR);
+            }
+        }
+    )
+
+    ONHASH(
+        if (stack->data != NULL) {
+            unsigned long long int data_hash = StackDataHash(stack);
+            if (data_hash != stack->data_hash) {
+                ONDEB(
+                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - incorrect data hash\n",
+                           calling_function_name, from_line);
+                    fprintf(log_file, "Its value %lld, Must be %lld\n", data_hash, stack->data_hash);
+                )
+                stack->error = (Stack_err_t)(stack->error | STACK_DATA_HASH_ERROR);
             }
         }
     )
@@ -431,8 +492,14 @@ void StackPrintError(const Stack_t* stack) {
         STACK_CHECK_ERROR(stack->error, STACK_DATA_ERROR);
         STACK_CHECK_ERROR(stack->error, STACK_CAPACITY_ERROR);
         STACK_CHECK_ERROR(stack->error, STACK_SIZE_ERROR);
-        STACK_CHECK_ERROR(stack->error, STACK_LEFT_CANARY_ERROR);
-        STACK_CHECK_ERROR(stack->error, STACK_RIGHT_CANARY_ERROR);
+        ONCAN(
+            STACK_CHECK_ERROR(stack->error, STACK_LEFT_CANARY_ERROR);
+            STACK_CHECK_ERROR(stack->error, STACK_RIGHT_CANARY_ERROR);
+        )
+        ONHASH(
+            STACK_CHECK_ERROR(stack->error, STACK_DATA_HASH_ERROR);
+            STACK_CHECK_ERROR(stack->error, STACK_HANDLE_HASH_ERROR);
+        )
 
         EndColor;
     }
@@ -455,6 +522,8 @@ Stack_report_t StackPush(Stack_t* stack, Stack_type_t new_item) {
 
     stack->data[stack->size] = new_item;
     stack->size++;
+    ONHASH(stack->data_hash = StackDataHash(stack);)
+    ONHASH(stack->handle_hash = StackHandleHash(stack);)
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))
         return stack->last_function_success = FATAL_ERROR;
@@ -486,6 +555,8 @@ Stack_type_t StackPop(Stack_t* stack) {
     stack->size--;
     Stack_type_t result = stack->data[stack->size];
     ONDEB(stack->data[stack->size] = POISON);
+    ONHASH(stack->data_hash = StackDataHash(stack);)
+    ONHASH(stack->handle_hash = StackHandleHash(stack);)
 
     if (((ssize_t)(stack->size * pow(CAPACITY_FACTOR, 2)) < stack->capacity) && (stack->size > 0)) {
         Stack_report_t reduce_res = SUCCESS;
@@ -513,7 +584,7 @@ Stack_report_t StackIncreaseCapacity(Stack_t* stack) {
         return FATAL_ERROR;
 
     ssize_t new_capacity = (ssize_t)(stack->capacity * CAPACITY_FACTOR) + 1;
-        Stack_type_t* new_data = StackReallocWithCanary(stack->data, new_capacity);
+        Stack_type_t* new_data = StackRealloc(stack->data, new_capacity);
 
         if (new_data == NULL) {
             ONDEB(
@@ -527,9 +598,10 @@ Stack_report_t StackIncreaseCapacity(Stack_t* stack) {
 
         stack->capacity = new_capacity; // REVIEW add canary
         stack->data = new_data;
-        StackSetCanary(stack);
-
+        ONCAN(StackSetDataCanary(stack);)
         ONDEB(StackFillPoison(stack, stack->size);)   // REVIEW doinitializirovat poisonami
+
+        ONHASH(stack->handle_hash = StackHandleHash(stack);)
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))
         return FATAL_ERROR;
@@ -545,14 +617,15 @@ Stack_report_t StackReduceCapacity(Stack_t* stack) {
         return FATAL_ERROR;
 
     ssize_t new_capacity = (ssize_t)(stack->capacity / CAPACITY_FACTOR);
-        Stack_type_t* new_data = StackReallocWithCanary(stack->data, new_capacity);
+        Stack_type_t* new_data = StackRealloc(stack->data, new_capacity);
 
         if (new_data != NULL) {
             stack->capacity = new_capacity; // REVIEW add canary
             stack->data = new_data;
-            StackSetCanary(stack);
-
+            ONCAN(StackSetDataCanary(stack);)
             ONDEB(StackFillPoison(stack, stack->size);)   // REVIEW doinitializirovat poisonami
+
+            ONHASH(stack->handle_hash = StackHandleHash(stack);)
         }
 
     if ((STACK_VERIFY(stack) != STACK_NORMAL) && (stack->error_fatality == FATAL))
@@ -562,31 +635,65 @@ Stack_report_t StackReduceCapacity(Stack_t* stack) {
 }
 
 
-Stack_type_t* StackReallocWithCanary(Stack_type_t* old_data, ssize_t new_capacity) {
+Stack_type_t* StackRealloc(Stack_type_t* old_data, ssize_t new_capacity) {
     Byte_t* byte_old_data = (Byte_t*)old_data;
+
+    ONCAN(
     if (old_data != NULL)
         byte_old_data -= CANARY_BYTE_SIZE;
-    void* buffer_start = realloc(byte_old_data, (new_capacity * sizeof(Stack_type_t)) + (2 * CANARY_BYTE_SIZE));
+    )
+
+    void* buffer_start = realloc(byte_old_data, (new_capacity * sizeof(Stack_type_t)) ONCAN(+ (2 * CANARY_BYTE_SIZE)));
 
     if (buffer_start == NULL)
         return NULL;
 
-    return (Stack_type_t*)((Byte_t*)buffer_start + CANARY_BYTE_SIZE);
+    return (Stack_type_t*)((Byte_t*)buffer_start ONCAN(+ CANARY_BYTE_SIZE));
 }
 
-Canary_t* LeftCanaryPtr(Stack_t* stack) {
-    assert(stack != NULL);
 
-    return (Canary_t*)(stack->data) - 1;
-}
+ONCAN(
+    Canary_t* LeftCanaryPtr(Stack_t* stack) {
+        assert(stack != NULL);
 
-Canary_t* RightCanaryPtr(Stack_t* stack) {
-    assert(stack != NULL);
+        return (Canary_t*)(stack->data) - 1;
+    }
 
-    return (Canary_t*)(stack->data + stack->capacity);
-}
+    Canary_t* RightCanaryPtr(Stack_t* stack) {
+        assert(stack != NULL);
 
-void StackSetCanary(Stack_t* stack) {
-    *LeftCanaryPtr(stack) = LEFT_CANARY;
-    *RightCanaryPtr(stack) = RIGHT_CANARY;
-}
+        return (Canary_t*)(stack->data + stack->capacity);
+    }
+
+    void StackSetDataCanary(Stack_t* stack) {
+        *LeftCanaryPtr(stack) = LEFT_CANARY;
+        *RightCanaryPtr(stack) = RIGHT_CANARY;
+    }
+)
+
+
+ONHASH(
+    unsigned long long int StackDataHash(Stack_t* stack) {
+        assert(stack != NULL);
+
+        return StackHash((unsigned char*)stack->data, stack->size * sizeof(Stack_type_t));
+    }
+
+    unsigned long long int StackHandleHash(Stack_t* stack) {
+        assert(stack != NULL);
+
+        return StackHash((unsigned char*)&(stack->data),
+                         (unsigned char*)&(stack->error) - (unsigned char*)&(stack->data));
+    }
+
+    unsigned long long int StackHash(unsigned char* from_ptr, size_t hashing_size) {
+        assert(from_ptr != NULL);
+
+        unsigned long long hash = 5381;
+
+        for (unsigned char* i_ptr = from_ptr; i_ptr < from_ptr + hashing_size; i_ptr++)
+            hash = (hash << 5) + hash + *i_ptr;
+
+        return hash;
+    }
+)
