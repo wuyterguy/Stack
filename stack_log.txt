@@ -1,7 +1,7 @@
 >>>>>
 Diagnostic from StackInit(), line 293: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 0
@@ -9,7 +9,7 @@ size = 0
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
    1.#QNAN0
    1.#QNAN0
 <<<<<
@@ -17,7 +17,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackPush(), line 519: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 0
@@ -25,7 +25,7 @@ size = 0
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
    1.#QNAN0
    1.#QNAN0
 <<<<<
@@ -33,7 +33,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackPush(), line 533: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 1
@@ -41,7 +41,7 @@ size = 1
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
  * 67.000000
    1.#QNAN0
 <<<<<
@@ -50,7 +50,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackPush(), line 519: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 1
@@ -58,7 +58,7 @@ size = 1
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
  * 67.000000
    1.#QNAN0
 <<<<<
@@ -66,7 +66,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackPush(), line 533: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 2
@@ -74,7 +74,7 @@ size = 2
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
  * 67.000000
  * 67.000000
 <<<<<
@@ -83,7 +83,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackPush(), line 519: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 2
@@ -91,7 +91,7 @@ size = 2
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
  * 67.000000
  * 67.000000
 <<<<<
@@ -99,7 +99,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackIncreaseCapacity(), line 588: No fatal damage
 
-stk1[01072F08] with type double from file Stack.c, func main(), line 200:
+stk1[00E92F08] with type double from file Stack.c, func main(), line 200:
 
 capacity = 2
 size = 2
@@ -107,7 +107,7 @@ size = 2
 error:
    no error
 
-data = 01072F08:
+data = 00E92F08:
  * 67.000000
  * 67.000000
 <<<<<
@@ -115,7 +115,7 @@ data = 01072F08:
 >>>>>
 Diagnostic from StackIncreaseCapacity(), line 611: No fatal damage
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 4
 size = 2
@@ -123,7 +123,7 @@ size = 2
 error:
    no error
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 67.000000
    1.#QNAN0
@@ -133,7 +133,7 @@ data = 01071478:
 >>>>>
 Diagnostic from StackPush(), line 533: No fatal damage
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 4
 size = 3
@@ -141,7 +141,7 @@ size = 3
 error:
    no error
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 67.000000
  * 67.000000
@@ -152,7 +152,7 @@ data = 01071478:
 >>>>>
 Diagnostic from StackPush(), line 519: No fatal damage
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 4
 size = 3
@@ -160,7 +160,7 @@ size = 3
 error:
    no error
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 67.000000
  * 67.000000
@@ -170,7 +170,7 @@ data = 01071478:
 >>>>>
 Diagnostic from StackPush(), line 533: No fatal damage
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 4
 size = 4
@@ -178,7 +178,7 @@ size = 4
 error:
    no error
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 67.000000
  * 67.000000
@@ -192,7 +192,7 @@ Its value 0x0000000000000043, must be 0xCA14A2E7CE111A27
 Diagnostic from StackPush(), line 519: Warning - incorrect data hash
 Its value 5735791882332010456, Must be 1211900830585566789
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 4
 size = 4
@@ -201,7 +201,7 @@ error:
    STACK_LEFT_CANARY_ERROR
    STACK_DATA_HASH_ERROR
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 0.000000
  * 67.000000
@@ -214,7 +214,7 @@ Its value 0x0000000000000043, must be 0xCA14A2E7CE111A27
 Diagnostic from StackIncreaseCapacity(), line 588: Warning - incorrect data hash
 Its value 5735791882332010456, Must be 1211900830585566789
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 4
 size = 4
@@ -223,7 +223,7 @@ error:
    STACK_LEFT_CANARY_ERROR
    STACK_DATA_HASH_ERROR
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 0.000000
  * 67.000000
@@ -234,7 +234,7 @@ data = 01071478:
 Diagnostic from StackIncreaseCapacity(), line 611: Warning - incorrect data hash
 Its value 5735791882332010456, Must be 1211900830585566789
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 7
 size = 4
@@ -242,7 +242,7 @@ size = 4
 error:
    STACK_DATA_HASH_ERROR
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 0.000000
  * 67.000000
@@ -255,7 +255,7 @@ data = 01071478:
 >>>>>
 Diagnostic from StackPush(), line 533: No fatal damage
 
-stk1[01071478] with type double from file Stack.c, func main(), line 200:
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
 
 capacity = 7
 size = 5
@@ -263,7 +263,7 @@ size = 5
 error:
    no error
 
-data = 01071478:
+data = 00E91478:
  * 67.000000
  * 0.000000
  * 67.000000
@@ -276,6 +276,304 @@ data = 01071478:
 -------------------------------------
 -------------------------------------
 >>>>>
-Diagnostic from StackPop(), line 544: Fatal error - handle information has been damaged, program aborted
-Canaries values: Left 0x0000000000000002, Right 0xAE4D1DC2F65B134B
-Must be:         Left 0xEA1AE2EABEE11A98, Right 0xAE4D1DC2F65B134B
+Diagnostic from StackPop(), line 544: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 7
+size = 5
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 574: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 7
+size = 4
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 544: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 7
+size = 4
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 621: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 7
+size = 3
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 636: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 574: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 544: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 4
+size = 3
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 574: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 4
+size = 2
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 544: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 4
+size = 2
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+ * 0.000000
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 621: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 4
+size = 1
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+   1.#QNAN0
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackReduceCapacity(), line 636: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 574: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+<0.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 544: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 2
+size = 1
+
+error:
+   no error
+
+data = 00E91478:
+ * 67.000000
+   1.#QNAN0
+<<<<<
+
+>>>>>
+Diagnostic from StackPop(), line 574: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00E91478:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+<67.000000>
+-------------------------------------
+>>>>>
+Diagnostic from StackPop(), line 544: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00E91478:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+
+note from StackPop(), line 555: can not do pop because stack is empty, pop was cancelled
+
+<1.#QNAN0>
+GGG
+>>>>>
+Diagnostic from StackDestroy(), line 303: No fatal damage
+
+stk1[00E91478] with type double from file Stack.c, func main(), line 200:
+
+capacity = 2
+size = 0
+
+error:
+   no error
+
+data = 00E91478:
+   1.#QNAN0
+   1.#QNAN0
+<<<<<
+

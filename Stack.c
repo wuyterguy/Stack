@@ -221,7 +221,7 @@ int main() {
     StackPush(stk1, 67);
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    stk1->left_handle_canary = 2;
+    //stk1->left_handle_canary = 2;
 
     ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
     if (stk1->last_function_success == VACUUM)
@@ -280,7 +280,7 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
     stack->error_fatality = NOT_FATAL;
     stack->last_function_success = SUCCESS;
     stack->data = StackRealloc(NULL, stack->capacity); // REVIEW func
-    if (stack->data != NULL)
+    if (((Byte_t*)stack->data ONCAN(- CANARY_BYTE_SIZE)) != NULL)
         ONCAN(StackSetDataCanary(stack);)
 
     ONDEB(StackFillPoison(stack, 0);) // REVIEW make function for fill poison
@@ -386,7 +386,7 @@ Stack_err_t DiagnoseError(Stack_t* stack, const char* calling_function_name, int
     }
 
     ONCAN(
-        if (stack->data != NULL) { // NOTE print canary value
+        if (((Byte_t*)stack->data ONCAN(- CANARY_BYTE_SIZE)) != NULL) { // NOTE print canary value
             if (*LeftCanaryPtr(stack) != LEFT_CANARY) {
                 ONDEB(
                     fprintf(log_file, "Diagnostic from %s(), line %d: Warning - left data canary has been damaged\n",
@@ -549,7 +549,7 @@ Stack_type_t StackPop(Stack_t* stack) {
     if (stack->size < 1) {
         ONDEB(
             SetColor(YEL);
-            fprintf(log_file, "note from %s(), line %d: can not do pop because stack is empty, pop was cancelled\n",
+            fprintf(log_file, "note from %s(), line %d: can not do pop because stack is empty, pop was cancelled\n\n",
                    __func__, __LINE__, stack->stack_name);
             EndColor;
         )
@@ -591,10 +591,10 @@ Stack_report_t StackIncreaseCapacity(Stack_t* stack) {
     ssize_t new_capacity = (ssize_t)(stack->capacity * CAPACITY_FACTOR) + 1;
         Stack_type_t* new_data = StackRealloc(stack->data, new_capacity);
 
-        if (new_data == NULL) {
+        if (((Byte_t*)new_data ONCAN(- CANARY_BYTE_SIZE)) == NULL) {
             ONDEB(
                 SetColor(YEL);
-                fprintf(log_file, "note from %s(), line %d: can not grow up capacity for %s, push was cancelled\n",
+                fprintf(log_file, "note from %s(), line %d: can not grow up capacity for %s, push was cancelled\n\n",
                        __func__, __LINE__, stack->stack_name);
                 EndColor;
             )
@@ -624,7 +624,7 @@ Stack_report_t StackReduceCapacity(Stack_t* stack) {
     ssize_t new_capacity = (ssize_t)(stack->capacity / CAPACITY_FACTOR);
         Stack_type_t* new_data = StackRealloc(stack->data, new_capacity);
 
-        if (new_data != NULL) {
+        if (((Byte_t*)new_data ONCAN(- CANARY_BYTE_SIZE)) != NULL) {
             stack->capacity = new_capacity; // REVIEW add canary
             stack->data = new_data;
             ONCAN(StackSetDataCanary(stack);)
