@@ -1,4 +1,4 @@
-#include <stdio.h>  // FIXME README
+#include <stdio.h>  // NOTE README
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
@@ -77,7 +77,7 @@ typedef enum {POP_NORMAL = 0}  Pop_err_t;  // return of StackPop()*/
 typedef char Byte_t;
 typedef unsigned long long int Canary_t;
 
-#define CANARY_SPECIFIER "0x%llX"
+#define CANARY_SPECIFIER "0x%.16llX"
 #define CANARY_BYTE_SIZE sizeof(Canary_t)
 #define LEFT_CANARY         0xCA14A2E7CE111A27ull
 #define RIGHT_CANARY        0xB12D1412E17B12D5ull
@@ -214,13 +214,14 @@ int main() {
     StackPush(stk1, 67);
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
     StackPush(stk1, 67);
-    //*(LeftCanaryPtr(stk1) + 2) = 67;
+    *LeftCanaryPtr(stk1) = 67;
+    *(LeftCanaryPtr(stk1) + 2) = 67;
     //stk1->size = 5;
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
     StackPush(stk1, 67);
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
     ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    //stk1->left_handle_canary = 2;
+    stk1->left_handle_canary = 2;
 
     ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
     if (stk1->last_function_success == VACUUM)
@@ -299,6 +300,8 @@ Stack_t* StackInit(ssize_t capacity ONDEB(, const char* stack_name, const char* 
 void StackDestroy(Stack_t* stack) { // FIXME proverit videlen li etot adress
     assert(stack != NULL);
 
+    (void)STACK_VERIFY(stack);
+
     if (stack->data != NULL) {
         ONDEB(StackFillPoison(stack, 0);)
         free((Byte_t*)stack->data ONCAN(- CANARY_BYTE_SIZE)); //REVIEW free(stack) with clearing fields by 0 values in case if it was requested bi stackInit
@@ -349,9 +352,11 @@ Stack_err_t DiagnoseError(Stack_t* stack, const char* calling_function_name, int
             (stack->right_handle_canary != RIGHT_HANDLE_CANARY)) {
             ONDEB(
                 fprintf(log_file, "Diagnostic from %s(), line %d: Fatal error - handle information has been damaged, program aborted\n",
-                       calling_function_name, from_line);
-                fprintf(log_file, "Left " CANARY_SPECIFIER ", Right " CANARY_SPECIFIER "\n",
-                       stack->left_handle_canary, stack->right_handle_canary);
+                        calling_function_name, from_line);
+                fprintf(log_file, "Canaries values: Left " CANARY_SPECIFIER ", Right " CANARY_SPECIFIER "\n",
+                        stack->left_handle_canary, stack->right_handle_canary);
+                fprintf(log_file, "Must be:         Left " CANARY_SPECIFIER ", Right " CANARY_SPECIFIER "\n",
+                        LEFT_HANDLE_CANARY, RIGHT_HANDLE_CANARY);
             )
             ONDEB(EndColor;)
             abort();
@@ -384,17 +389,17 @@ Stack_err_t DiagnoseError(Stack_t* stack, const char* calling_function_name, int
         if (stack->data != NULL) { // NOTE print canary value
             if (*LeftCanaryPtr(stack) != LEFT_CANARY) {
                 ONDEB(
-                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - left canary has been damaged\n",
+                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - left data canary has been damaged\n",
                            calling_function_name, from_line);
-                    fprintf(log_file, "Its value: " CANARY_SPECIFIER "\n", *LeftCanaryPtr(stack));
+                    fprintf(log_file, "Its value " CANARY_SPECIFIER ", must be " CANARY_SPECIFIER "\n", *LeftCanaryPtr(stack), LEFT_CANARY);
                 )
                 stack->error = (Stack_err_t)(stack->error | STACK_LEFT_CANARY_ERROR);
             }
             if (*RightCanaryPtr(stack) != RIGHT_CANARY) {
                 ONDEB(
-                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - right canary has been damaged\n",
+                    fprintf(log_file, "Diagnostic from %s(), line %d: Warning - right data canary has been damaged\n",
                            calling_function_name, from_line);
-                    fprintf(log_file, "Its value: " CANARY_SPECIFIER "\n", *RightCanaryPtr(stack));
+                    fprintf(log_file, "Its value " CANARY_SPECIFIER ", must be " CANARY_SPECIFIER "\n", *RightCanaryPtr(stack), RIGHT_CANARY);
                 )
                 stack->error = (Stack_err_t)(stack->error | STACK_RIGHT_CANARY_ERROR);
             }
