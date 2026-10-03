@@ -198,56 +198,18 @@ int main() {
     )
 
     Stack_t* stk1 = STACK_INIT(stk1, 2);
-    //Stack_t* stk1 = STACK_INIT(stk1, -20000000000);
+
     if (stk1 == NULL) {
         ONDEB(fprintf(log_file, "Bad initialization!\n");)
         return 1;
     }
 
-
-    //*RightCanaryPtr(&stk1) = 67;
-
     StackPush(stk1, 67);
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    StackPush(stk1, 67);
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    StackPush(stk1, 67);
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    StackPush(stk1, 67);
-    *LeftCanaryPtr(stk1) = 67;
-    *(LeftCanaryPtr(stk1) + 2) = 67;
-    //stk1->size = 5;
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    StackPush(stk1, 67);
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    //stk1->left_handle_canary = 2;
 
     ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
     if (stk1->last_function_success == VACUUM)
         ONDEB(fprintf(log_file, "GGG\n");)
-    ONDEB(fprintf(log_file, "-------------------------------------\n");
-    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
-    if (stk1->last_function_success == VACUUM))
-        ONDEB(fprintf(log_file, "GGG\n");)
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
-    if (stk1->last_function_success == VACUUM)
-        ONDEB(fprintf(log_file, "GGG\n");)
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
-    if (stk1->last_function_success == VACUUM)
-        ONDEB(fprintf(log_file, "GGG\n");)
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
-    if (stk1->last_function_success == VACUUM)
-        ONDEB(fprintf(log_file, "GGG\n");)
-    ONDEB(fprintf(log_file, "-------------------------------------\n");)
-    ONDEB(fprintf(log_file, "<%lf>\n", StackPop(stk1));)
-    if (stk1->last_function_success == VACUUM)
-        ONDEB(fprintf(log_file, "GGG\n");)
 
-    //(void)STACK_VERIFY(&stk1);
     StackDestroy(stk1);
 }
 
@@ -467,7 +429,7 @@ void StackDump(const Stack_t* stack) { // TODO color
             if ((in_stack_ptr - stack->data) < stack->size) fprintf(log_file, " * ");
             else fprintf(log_file, "   ");
 
-            fprintf(log_file, STACK_TYPE_SPECIFIER, *in_stack_ptr);
+            fprintf(log_file, STACK_TYPE_SPECIFIER " [%zu]", *in_stack_ptr, in_stack_ptr - stack->data);
 
             if (*in_stack_ptr == POISON) fprintf(log_file, " (POISON)");
             fprintf(log_file, "\n");
